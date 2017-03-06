@@ -42,16 +42,14 @@ res_c =sc.optimize.minimize(fun, (0.1,1,1,1,1,1),args=(to), method= "SLSQP",boun
 def ycm(to, x):
     return x[0]+x[1]*((1-np.exp(-to/x[4]))/(to/x[4]))+x[2]*(((1-np.exp(-to/x[4]))/(to/x[4]))-np.exp(-to/x[4]))+x[3]*(((1-np.exp(-to/x[5]))/(to/x[5]))-np.exp(-to/x[5]))
     
-    #Graphiqques 
+    #Graphiques de comparaison entre courbe observée et courbe modélisée 
 
-plt.plot(df[0], df[1] ,'o-', df[0], ycm(to,res_c.x),'g-')
+plt.plot(df[0], df[1] ,'r-', df[0], ycm(to,res_c.x),'b--')
 plt.title('BCE Yield Curves')
 plt.ylabel('Rates')
-plt.ylabel('Maturity')
+plt.xlabel('Maturity')
 
 #f2 = sc.interpolate.interp1d(df[0], df[1], kind='cubic')
 #plt.plot(df[0], df[1] ,'o-', df[0], f2(df[0]),'g-')
 #
 #tck = sc.interpolate.splrep(df[0], df[1], s=0)
-
-sc.interp
