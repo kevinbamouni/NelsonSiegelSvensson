@@ -26,7 +26,7 @@ def fun(x,to):
 
 # Optimisation sans contraintes, méthode du simplexe
 
-res_sc =scipy.optimize.minimize(fun, (.1,1,1,1,1,1),args=(to), method= "Nelder-Mead")
+res_sc =sc.optimize.minimize(fun, (.1,1,1,1,1,1),args=(to), method= "Nelder-Mead")
 
 # optimisation sous contraintes
 
