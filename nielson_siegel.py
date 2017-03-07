@@ -16,7 +16,7 @@ import scipy as sc
 
 df = pd.read_csv("yield_curve_spot_bce.csv", header=None, decimal=",")
 
-to=df[1]
+to=df[0]
 
 # Fonction d'optimisatiion, 
 # minimisation de la somme des écarts entre taux modélisés et taux théoriques 
