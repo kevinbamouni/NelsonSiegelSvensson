@@ -60,11 +60,11 @@ def mRN(m,n):
     return np.random.normal(size=(m,n))
 
 def shift(x):
-    rr = len(x)
+    rr = x.size
     return np.hstack((x[rr-1],np.array(x[range(rr-1)])))
 
 def soustrac1(x, maxV):
-    return x - maxV
+    return x + maxV
 
 def pen(mP, pso, vF):
     minV = pso.get("min")
@@ -73,12 +73,12 @@ def pen(mP, pso, vF):
     
     # max constraint: if larger than maxV, element in A is positiv
     # A = mP - (maxV)
-    A = np.apply_along_axis(soustrac1,0,mP,maxV=maxV)
+    A = np.apply_along_axis(soustrac1,0,mP,maxV=-1*maxV)
     A = A + abs(A)
 
     # max constraint: if smaller than minV, element in B is positiv
     # B = minV - mP
-    B = np.apply_along_axis(soustrac1,0,-mP,maxV=-maxV)
+    B = np.apply_along_axis(soustrac1,0,-1*mP,maxV=minV)
     B = B + abs(B)
 
     ## beta 1 + beta2 > 0
@@ -93,7 +93,7 @@ def DE(de,dataList,OF):
     # ------------------------------------------------------------------
     # set up initial population
     #mP = de.get("min") + np.dot(np.diag(de.get("max") - de.get("min")) , mRU(de.get("d"),de.get("nP")))
-    mP = np.apply_along_axis(soustrac1, 0, np.dot(np.diag(de.get("max") - de.get("min")) , mRU(de.get("d"),de.get("nP"))) ,maxV = -de.get("min"))
+    mP = np.apply_along_axis(soustrac1, 0, np.dot(np.diag(de.get("max") - de.get("min")) , mRU(de.get("d"),de.get("nP"))) ,maxV = de.get("min"))
 
     # include extremes
     mP[:,0:de.get("d")] = np.diag(de.get("max"))
@@ -133,14 +133,14 @@ def DE(de,dataList,OF):
         # constraints
         vPv = pen(mPv,de,vF)
         vFv = vFv + vPv
-        vFv[(np.isfinite(vFv))] = 1000000
-        
+        vFv[np.where(np.isinf(vFv))] = 1000000
+        vFv[np.where(np.isnan(vFv))] = 1000000
         # find improvements
         logik = vFv < vF
-        mP[logik] = mPv[logik]
+        mP[:,logik] = mPv[:,logik]
         vF[logik] = vFv[logik]
-        Fmat = vF
-
+        Fmat[g,:] = vF
+        
     # g in 1:nG
     sGbest = np.min(vF)
     sgbest = np.argmin(vF)
@@ -151,14 +151,14 @@ def DE(de,dataList,OF):
 
 # application de l'evolution differentielle appliqué à Nelson siegel svennsson
 # maturites 
-mats = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.])
+mats = np.array([1,2,3,4,5,6,7,8,9])
 
 # taux
 yM = np.array([0.1,0.2,0.3,0.4,0.5,0.55,0.57,0.59,0.61])
 
 # 
-de = {"min"	: np.array([0.,-15.,-30.,-30.,0.  ,2.5]),# minimum du vecteur des paramètres à estimer 
-            "max"	: np.array([15., 30., 30., 30.,2.5,5. ]),# Le maximum du vecteur des paramètres
+de = {"min"	: np.array([0.,-15,-30,-30,0  ,2.5]),# minimum du vecteur des paramètres à estimer 
+            "max"	: np.array([15, 30, 30, 30,2.5,5 ]),# Le maximum du vecteur des paramètres
 		"d"	: 6, # Dimension du param-tre à estimer ou effectif de la population
 		"nP"	: 200,
 		"nG"	: 600,
